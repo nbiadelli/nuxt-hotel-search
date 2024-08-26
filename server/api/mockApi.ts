@@ -1,4 +1,5 @@
-import type { Hotel } from "./hotels.types"
+import { socketServer } from "../plugins/socket.io";
+import type { Hotel, ReservationResponse } from "./hotels.types"
 
 
 const hotelsList: Hotel[] = [
@@ -176,6 +177,7 @@ const hotelsList: Hotel[] = [
 ];
 
 
+
 export function filterHotels(searchCriteria: any): Hotel[] {
   return hotelsList.filter(hotel =>
     hotel.location.toLowerCase() === searchCriteria.destination.toLowerCase() &&
@@ -183,26 +185,12 @@ export function filterHotels(searchCriteria: any): Hotel[] {
   );
 }
 
-// export function getHotels(searchCriteria: any): Hotel[] {
-//   return hotelsList
-//     .filter(hotel =>
-//       hotel.location.toLowerCase() === searchCriteria.destination.toLowerCase() &&
-//       (searchCriteria.checkIn === '' || hotel.availableDates.includes(searchCriteria.checkIn))
-//     )
-//     .sort((a, b) => {
-//       // Primeiro ordena pelo menor preço
-//       if (a.pricePerNight !== b.pricePerNight) {
-//         return a.pricePerNight - b.pricePerNight;
-//       }
-//       // Se o preço for igual, ordena do maior para o menor número de estrelas
-//       return b.stars - a.stars;
-//     });
-// }
 
-// export function makeReservation(reservationDetails: any) {
-//   return {
-//     success: true,
-//     reservationId: Math.floor(Math.random() * 10000),
-//     details: reservationDetails,
-//   };
-// }
+export function makeReservation(reservationDetails: any): ReservationResponse {
+  setInterval(() => socketServer()?.emit("StatusReservation", "Sua reserva está confirmada!"), 2000);
+  
+  return {
+    success: true,
+    reservationId: Math.floor(Math.random() * 10000),
+  };
+}

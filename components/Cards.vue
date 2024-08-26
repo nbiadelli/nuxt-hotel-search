@@ -1,5 +1,6 @@
 <template>
     <div class="border rounded-lg shadow-sm p-4 bg-white flex space-x-4">
+      <pre>{{hotel}}</pre>
       <div class="relative w-60 h-60">
         <img
           :src="imageUrl"
@@ -34,7 +35,7 @@
             <span class="text-xl font-bold text-gray-800">R$ {{ price }}</span>
             <p class="text-sm text-gray-600">Impostos e taxas incluídos</p>
           </div>
-          <button class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700">
+          <button v-if="!buttonVisible" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700">
             Reservar
           </button>
         </div>
@@ -110,7 +111,12 @@
       stars: {
         type: Number,
         required: true
-      }
+      },
+      buttonVisible: {
+        type: Boolean,
+        required: false
+      },
+      
     }
   });
   </script>

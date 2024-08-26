@@ -2,11 +2,16 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: [
-    '@pinia/nuxt', // needed
-    '@pinia-plugin-persistedstate/nuxt',
-    '@nuxtjs/tailwindcss'
+    "@pinia/nuxt", // needed
+    "@pinia-plugin-persistedstate/nuxt",
+    "@nuxtjs/tailwindcss",
   ],
   build: {
-    transpile: ['pinia-plugin-persistedstate'],
+    transpile: ["pinia-plugin-persistedstate"],
   },
-})
+  nitro: {
+    experimental: {
+      websocket: true,
+    },
+  },
+});

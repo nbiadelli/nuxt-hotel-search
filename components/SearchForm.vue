@@ -89,10 +89,17 @@
     </div>
 
     <div class="flex-1 overflow-y-auto mt-4">
-      <div class="flex flex-col items-end justify-between mt-4 mb-4" v-if="userStore.hotelStore.length">
+      <div
+        class="flex flex-col items-end justify-between mt-4 mb-4"
+        v-if="userStore.hotelStore.length"
+      >
         <Filter />
       </div>
-      <div v-for="(item, index) in userStore.hotelStore" :key="index" class="mb-4">
+      <div
+        v-for="(item, index) in userStore.hotelStore"
+        :key="index"
+        class="mb-4"
+      >
         <div class="flex items-start">
           <input
             type="checkbox"
@@ -113,7 +120,7 @@
             :rating="item.rating"
             :reviewCount="item.reviewCount"
             :stars="item.stars"
-            @change="saveReservation(item)"
+            @click="reservationItem(item)"
           />
         </div>
       </div>
@@ -152,12 +159,12 @@
               avaliações)</span
             >
           </p>
-          <!-- <button
-            @click="reservationHotel(hotel)"
+          <button
+            @click="reservationItem(hotel)"
             class="bg-blue-600 text-white font-semibold px-4 py-2 mt-4 rounded-lg hover:bg-blue-700"
           >
             Reservar
-          </button> -->
+          </button>
         </div>
       </div>
     </div>
@@ -166,11 +173,15 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useCounterStore } from "../stores/listHotels";
-import type { Hotel , HotelSearchForm } from "../server/api/hotels.types"
+import { navigateTo } from 'nuxt/app';
+import { useCounterStore } from "../stores/hotels";
+import type {
+  Hotel,
+  HotelSearchForm,
+  Reservation,
+} from "../server/api/hotels.types";
 
 const userStore = useCounterStore();
-
 
 const form = ref<HotelSearchForm>({
   destination: "",
@@ -194,7 +205,7 @@ const searchHotels = async () => {
         // guests: form.value.guests,
       },
     });
-    saveHotel(response.hotels)
+    saveListHotel(response.hotels);
   } catch (error) {
     console.error("Erro ao buscar hotéis:", error);
   }
@@ -208,27 +219,16 @@ const toggleHotelSelection = (hotel: Hotel) => {
     selectedHotels.value.push(hotel);
   } else {
     selectedHotels.value.splice(index, 1);
-  } 
-
-
+  }
 };
 
-const saveReservation =(hotel: Hotel) =>{
-  const index = selectedHotels.value.findIndex(
-    (selected) => selected.id === hotel.id
-  );
+const reservationItem = (saveHotel: Reservation) => {
+  userStore.saveReservationHotels(saveHotel);
+  navigateTo('/reservation')
+};
 
-  console.log("saveReservation>>>>>>>>>", selectedHotels.value)
-
-  // if (index === -1) {
-  //   selectedHotels.value.push(hotel);
-  // } else {
-  //   selectedHotels.value.splice(index, 1);
-  // } 
-}
-
-const saveHotel = (hotels: Hotel[]) => {
-  userStore.saveHotels(hotels)
+const saveListHotel = (hotels: Hotel[]) => {
+  userStore.saveHotels(hotels);
 };
 
 const clearForm = () => {

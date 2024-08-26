@@ -1,9 +1,27 @@
 <template>
   <div
-    class="max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg h-screen flex flex-col"
+    class="max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg flex flex-col"
   >
     <h2 class="text-xl font-bold mb-4">Reservar Quarto</h2>
-    <form @submit.prevent="handleSubmit">
+
+    <div class="mb-4">
+      <Cards
+        :imageUrl="userStore.hotelStoreReservation.imageUrl"
+        :hotelName="userStore.hotelStoreReservation.name"
+        :location="userStore.hotelStoreReservation.location"
+        :distanceFromCenter="userStore.hotelStoreReservation.distanceFromCenter"
+        :roomType="userStore.hotelStoreReservation.roomType"
+        :bedType="userStore.hotelStoreReservation.bedType"
+        :breakfastInfo="userStore.hotelStoreReservation.breakfastInfo"
+        :price="userStore.hotelStoreReservation.pricePerNight"
+        :ratingLabel="userStore.hotelStoreReservation.ratingLabel"
+        :rating="userStore.hotelStoreReservation.rating"
+        :reviewCount="userStore.hotelStoreReservation.reviewCount"
+        :stars="userStore.hotelStoreReservation.stars"
+        :buttonVisible="true"
+      />
+    </div>
+    <form @submit.prevent="handleSubmit" v-if="!bookingConfirmation">
       <div class="mb-4">
         <label for="name" class="block text-sm font-medium text-gray-700"
           >Nome</label
@@ -135,13 +153,25 @@
         Reservar
       </button>
     </form>
+    <div v-if="bookingConfirmation">
+      <h1 class="text-2xl font-bold">Verificação de Reserva</h1>
+      <h2 class="text-1xl font-bold">Numero sa sua Reserva: {{reservationNumber}}</h2>
+      <Connection />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useCounterStore } from "../stores/hotels";
+import type { ReservationForm, ReservationResponse } from "../server/api/hotels.types";
 
-const form = ref({
+const userStore = useCounterStore();
+
+const bookingConfirmation = ref(false);
+const reservationNumber = ref(0)
+
+const form = ref<ReservationForm>({
   name: "",
   email: "",
   phone: "",
@@ -153,13 +183,27 @@ const form = ref({
   cardExpiry: "",
   cardCVV: "",
   pixKey: "XsaNQdkMkAKjjFgIvx2Z.",
+  hotel: userStore.hotelStoreReservation,
 });
 
-const handleSubmit = () => {
-  // Lógica para envio do formulário, pode incluir chamada para API de reserva
-  console.log("Form data:", form.value);
-  // Aqui você pode adicionar a lógica para envio do formulário, como uma requisição para uma API de reservas
+const handleSubmit = async () => {
+  
+  try {
+    const response = await $fetch<{ booking: ReservationResponse }>(
+      "/api/reservation",
+      {
+        method: "POST",
+        body: form.value,
+      }
+    );
+    bookingConfirmation.value = response.booking.success;
+    reservationNumber.value = response.booking.reservationId
+  } catch (error) {
+    console.error("Erro ao realizar reserva:", error);
+  }
 };
+
+
 </script>
 
 <style scoped>

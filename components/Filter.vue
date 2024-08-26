@@ -52,7 +52,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import type { Hotel  } from "../server/api/hotels.types"
-import { useCounterStore } from "../stores/listHotels";
+import { useCounterStore } from "../stores/hotels";
 const userStore = useCounterStore();
 
 
