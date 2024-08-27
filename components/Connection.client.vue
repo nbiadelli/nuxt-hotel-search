@@ -45,15 +45,13 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col items-center justify-center">
-    <!-- Animação Espiral de Carregamento -->
     <div v-if="isLoading" class="flex flex-col items-center">
       <div
-        class="animate-spin rounded-full h-40 w-40 border-t-4 border-blue-500 mb-4"
+        class="animate-spin rounded-full h-40 w-40 border-t-4 border-blue-600 mb-4"
       ></div>
-      <p class="text-gray-700 mt-2">Processando sua reserva...</p>
+      <p class="text-blue-600 mt-2" >Processando sua reserva...</p>
     </div>
 
-    <!-- Confirmação com Ícone de "Certo" -->
     <div v-else class="flex flex-col items-center text-green-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +67,10 @@ onMounted(() => {
           d="M5 13l4 4L19 7"
         />
       </svg>
-      <p class="text-lg mt-4">{{ message }}</p>
+      <p class="text-lg mt-4">{{ message.message }}</p>
+      <p class="text-1xl">
+        Numero da sua Reserva: <span class="font-bold">{{ message.reservationId }}</span>
+      </p>
     </div>
   </div>
 </template>

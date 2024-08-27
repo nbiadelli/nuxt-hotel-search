@@ -26,7 +26,12 @@
       v-if="isOpen"
       class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
     >
-      <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+      <div
+        class="py-1"
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="options-menu"
+      >
         <a
           v-for="option in options"
           :key="option.value"
@@ -39,33 +44,27 @@
         </a>
       </div>
     </div>
-
-    <!-- Exibir a lista ordenada -->
-    <!-- <ul class="mt-4">
-      <li v-for="hotel in sortedHotels" :key="hotel.name">
-        {{ hotel.name }} - ${{ hotel.price }} - {{ hotel.stars }} Estrelas
-      </li>
-    </ul> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import type { Hotel  } from "../server/api/hotels.types"
-import { useCounterStore } from "../stores/hotels";
-const userStore = useCounterStore();
+import { ref, defineProps } from "vue";
+import type { Hotel } from "../server/api/hotels.types";
 
+const props = defineProps({
+  listFilter: {
+    type: Array as PropType<Hotel[]>,
+  },
+});
 
 const options = ref([
-  { label: 'Menor Preço', value: 'pricePerNight' },
-  { label: 'Maior Avaliações', value: 'stars' },
+  { label: "Menor Preço", value: "pricePerNight" },
+  { label: "Maior Avaliações", value: "stars" },
 ]);
 
 const isOpen = ref(false);
-const selectedLabel = ref('Selecione uma opção');
+const selectedLabel = ref("Selecione uma opção");
 const selectedValue = ref<string | null>(null);
-
-const sortedHotels = ref<Hotel[]>([...userStore.filterHotels]);
 
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
@@ -79,17 +78,12 @@ const selectOption = (option: { label: string; value: string }) => {
 };
 
 const sortHotels = (value: string) => {
-  let sortedHotels = [...userStore.hotelStore];
-
-  if (value === 'pricePerNight') {
-    sortedHotels.sort((a, b) => a.pricePerNight - b.pricePerNight);
-  } else if (value === 'stars') {
-    sortedHotels.sort((a, b) => b.stars - a.stars);
+  if (value === "pricePerNight") {
+    props.listFilter?.sort((a, b) => a.pricePerNight - b.pricePerNight);
+  } else if (value === "stars") {
+    props.listFilter?.sort((a, b) => b.stars - a.stars);
   }
-
-  userStore.hotelStore = sortedHotels;
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

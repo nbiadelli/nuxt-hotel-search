@@ -25,14 +25,16 @@ export const useAuthStore = defineStore('auth', {
         this.user = mockUser;
         this.isAuthenticated = true;
       } else {
-
         throw new Error('Email ou senha inválida');
-        
       }
     },
     logout() {
       this.user = null;
-      this.isAuthenticated = false;
+      return this.isAuthenticated = false;
     }
+  },
+  getters: {
+    loginAuthenticated: (state) => state.isAuthenticated,
+    loginExit: (state) => state.isAuthenticated,
   },
 });

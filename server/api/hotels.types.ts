@@ -63,5 +63,5 @@ export interface ReservationForm {
 }
 export interface ReservationResponse {
   success: boolean;
-  reservationId: number;
+  statusMessage: string;
 }

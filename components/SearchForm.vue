@@ -1,10 +1,13 @@
 <template>
   <div
-    class="max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg h-screen flex flex-col"
+    :class="[
+      'max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg flex flex-col',
+      { 'h-screen': selectedHotels.length > 0 }
+    ]"
   >
     <div class="sticky top-0 bg-white z-10">
       <h2 class="text-xl font-bold mb-4">Pesquisar Hotéis</h2>
-      <form @submit.prevent="searchHotels">
+      <form @submit.prevent="onSearch()">
         <div class="flex flex-wrap gap-4">
           <div class="flex-1 min-w-[200px] mb-4 relative">
             <label
@@ -91,15 +94,11 @@
     <div class="flex-1 overflow-y-auto mt-4">
       <div
         class="flex flex-col items-end justify-between mt-4 mb-4"
-        v-if="userStore.hotelStore.length"
+        v-if="listHotel"
       >
-        <Filter />
+        <Filter :listFilter="listHotel" />
       </div>
-      <div
-        v-for="(item, index) in userStore.hotelStore"
-        :key="index"
-        class="mb-4"
-      >
+      <div v-for="(item, index) in listHotel" :key="index" class="mb-4">
         <div class="flex items-start">
           <input
             type="checkbox"
@@ -120,7 +119,7 @@
             :rating="item.rating"
             :reviewCount="item.reviewCount"
             :stars="item.stars"
-            @click="reservationItem(item)"
+            :selectedHotel="() => reservationItem(item)"
           />
         </div>
       </div>
@@ -172,14 +171,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { navigateTo } from 'nuxt/app';
+import { defineProps, ref, defineEmits } from "vue";
+import { navigateTo } from "nuxt/app";
 import { useCounterStore } from "../stores/hotels";
 import type {
   Hotel,
   HotelSearchForm,
   Reservation,
 } from "../server/api/hotels.types";
+
+defineProps({
+  onSearch: {
+    type: Function,
+    default() {},
+  },
+  listHotel: {
+    type: Array as PropType<Hotel[]>,
+  },
+});
 
 const userStore = useCounterStore();
 
@@ -191,25 +200,11 @@ const form = ref<HotelSearchForm>({
   guests: 1,
 });
 
-const selectedHotels = ref<Hotel[]>([]);
+const emit = defineEmits(["update:form"]);
 
-const searchHotels = async () => {
-  try {
-    const response = await $fetch<{ hotels: Hotel[] }>("/api/hotels", {
-      method: "GET",
-      params: {
-        destination: form.value.destination,
-        checkIn: form.value.checkIn,
-        // checkOut: form.value.checkOut,
-        // rooms: form.value.rooms,
-        // guests: form.value.guests,
-      },
-    });
-    saveListHotel(response.hotels);
-  } catch (error) {
-    console.error("Erro ao buscar hotéis:", error);
-  }
-};
+emit("update:form", form.value);
+
+const selectedHotels = ref<Hotel[]>([]);
 
 const toggleHotelSelection = (hotel: Hotel) => {
   const index = selectedHotels.value.findIndex(
@@ -224,11 +219,7 @@ const toggleHotelSelection = (hotel: Hotel) => {
 
 const reservationItem = (saveHotel: Reservation) => {
   userStore.saveReservationHotels(saveHotel);
-  navigateTo('/reservation')
-};
-
-const saveListHotel = (hotels: Hotel[]) => {
-  userStore.saveHotels(hotels);
+  navigateTo("/reservation");
 };
 
 const clearForm = () => {
