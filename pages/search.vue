@@ -1,10 +1,10 @@
 <template>
   <SearchForm
     :onSearch="searchHotels"
+    :toggleHotelSelection="toggleHotelSelection"
     :listHotel="dataHotels"
     @update:form="handleFormUpdate"
-  ></SearchForm
-  >/>
+  ></SearchForm>
 </template>
 
 <script setup lang="ts">
@@ -29,6 +29,13 @@ onMounted(() => {
 const handleFormUpdate = (form: HotelSearchForm) => {
   searchFormData.value = form;
 };
+
+const toggleHotelSelection = (hotel: Hotel) => {
+  const fhotel = dataHotels.value?.find(x => x.id === hotel.id);
+  if (fhotel) {
+    fhotel.selected = !fhotel.selected;
+  }
+}
 
 const searchHotels = async () => {
   try {

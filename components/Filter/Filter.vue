@@ -49,7 +49,7 @@
 
 <script lang="ts" setup>
 import { ref, defineProps } from "vue";
-import type { Hotel } from "../server/api/hotels.types";
+import type { Hotel } from "../../server/api/hotels.types";
 
 const props = defineProps({
   listFilter: {

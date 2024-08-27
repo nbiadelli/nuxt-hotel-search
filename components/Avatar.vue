@@ -58,9 +58,8 @@ const toggleMenu = () => {
 };
 
 const logout = () => {
-  !authStore.loginExit
-  isOpen.value = false;
-  navigateTo("/login");
+  const sair = authStore.logout()
+  navigateTo("/login")
 };
 </script>
 

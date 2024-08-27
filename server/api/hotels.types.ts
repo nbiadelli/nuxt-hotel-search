@@ -14,8 +14,8 @@ export interface Hotel {
   rating: string;
   reviewCount: string;
   stars: number;
-}
-[];
+  selected?: boolean;
+}[];
 
 export interface Reservation {
   id: number;
@@ -33,8 +33,6 @@ export interface Reservation {
   rating: string;
   reviewCount: string;
   stars: number;
-}
-{
 }
 
 export interface HotelSearchForm {

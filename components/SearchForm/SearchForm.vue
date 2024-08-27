@@ -2,7 +2,7 @@
   <div
     :class="[
       'max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg flex flex-col',
-      { 'h-screen': selectedHotels.length > 0 }
+      { 'h-screen': compareHotels().length > 0 },
     ]"
   >
     <div class="sticky top-0 bg-white z-10">
@@ -98,11 +98,12 @@
       >
         <Filter :listFilter="listHotel" />
       </div>
+
       <div v-for="(item, index) in listHotel" :key="index" class="mb-4">
         <div class="flex items-start">
           <input
             type="checkbox"
-            :value="item"
+            :checked="item?.selected"
             @change="toggleHotelSelection(item)"
             class="mr-2"
           />
@@ -124,21 +125,28 @@
         </div>
       </div>
     </div>
-
     <div
-      v-if="selectedHotels.length > 0"
+      v-if="compareHotels().length > 0"
       class="mt-6 bg-gray-100 p-4 rounded-lg"
     >
       <h3 class="text-lg font-bold mb-4">Comparar Hotéis Selecionados</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
-          v-for="(hotel, index) in selectedHotels"
+          v-for="(hotel, index) in compareHotels()"
           :key="index"
-          class="bg-white p-4 shadow rounded"
+          class="bg-white p-4 shadow rounded relative"
         >
+          <button
+            @click="toggleHotelSelection(hotel)"
+            class="absolute top-0 right-0 h-16 w-16 text-gray-600 hover:text-gray-800"
+          >
+            &times;
+          </button>
+
           <h4 class="text-md font-semibold mb-2">
             <span class="font-bold">{{ hotel.name }}</span>
           </h4>
+
           <p>
             Localização: <span class="font-bold">{{ hotel.location }}</span>
           </p>
@@ -151,21 +159,44 @@
           </p>
           <p>
             Avaliação:
-            <span class="font-bold"
-              >{{ hotel.reviewCount }} {{ hotel.rating }} ({{
+            <span class="font-bold">
+              {{ hotel.reviewCount }} {{ hotel.rating }} ({{
                 hotel.reviewCount
               }}
-              avaliações)</span
-            >
+              avaliações)
+            </span>
           </p>
-          <button
-            @click="reservationItem(hotel)"
-            class="bg-blue-600 text-white font-semibold px-4 py-2 mt-4 rounded-lg hover:bg-blue-700"
-          >
-            Reservar
-          </button>
+          <div class="flex justify-center">
+            <button
+              @click="reservationItem(hotel)"
+              class="w-full bg-blue-600 text-white font-semibold px-4 py-2 mt-4 rounded-lg hover:bg-blue-700"
+            >
+              Reservar
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div
+      v-if="!listHotel?.length"
+      class="flex items-center justify-center h-64 bg-gray-100"
+    >
+      <svg
+        class="w-10 h-10 text-gray-700"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9.172 16.172a4 4 0 015.656 0M9 9h.01M15 9h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+        ></path>
+      </svg>
+      <span class="text-gray-700 ml-4">Nenhum hotel encontrado.</span>
     </div>
   </div>
 </template>
@@ -173,15 +204,19 @@
 <script setup lang="ts">
 import { defineProps, ref, defineEmits } from "vue";
 import { navigateTo } from "nuxt/app";
-import { useCounterStore } from "../stores/hotels";
+import { useCounterStore } from "../../stores/hotels";
 import type {
   Hotel,
   HotelSearchForm,
   Reservation,
-} from "../server/api/hotels.types";
+} from "../../server/api/hotels.types";
 
-defineProps({
+const props = defineProps({
   onSearch: {
+    type: Function,
+    default() {},
+  },
+  toggleHotelSelection: {
     type: Function,
     default() {},
   },
@@ -206,16 +241,9 @@ emit("update:form", form.value);
 
 const selectedHotels = ref<Hotel[]>([]);
 
-const toggleHotelSelection = (hotel: Hotel) => {
-  const index = selectedHotels.value.findIndex(
-    (selected) => selected.id === hotel.id
-  );
-  if (index === -1) {
-    selectedHotels.value.push(hotel);
-  } else {
-    selectedHotels.value.splice(index, 1);
-  }
-};
+function compareHotels(): Hotel[] {
+  return props.listHotel?.filter((x) => x.selected) || [];
+}
 
 const reservationItem = (saveHotel: Reservation) => {
   userStore.saveReservationHotels(saveHotel);

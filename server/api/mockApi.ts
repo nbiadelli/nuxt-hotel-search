@@ -184,35 +184,7 @@ const hotelsList: Hotel[] = [
   },
 ];
 
-// export function filterHotels(searchCriteria: any): Hotel[] {
-//   console.log("LLLLLLLLLLLLLLLLLLLL", searchCriteria)
-//   const dateRegex = new RegExp(
-//     searchCriteria.checkIn ? searchCriteria.checkIn.split("-").join("\\-") : ""
-//   );
-
-//   return hotelsList.map(x => x).filter((hotel) => {
-//     const locationMatches = hotel.location
-//       .toLowerCase()
-//       .includes(searchCriteria.destination.toLowerCase());
-
-//       console.log(">>>>>>>>>>>>>>>>", { loc: hotel?.location, locationMatches, searchCriteria })
-
-//     // const datesMatch = searchCriteria.checkIn
-//     //   ? hotel.availableDates.some((date: any) => dateRegex.test(date))
-//     //   : true;
-
-//     // const specificDatesMatch = searchCriteria.availableDates
-//     //   ? searchCriteria.availableDates.some((date: any) =>
-//     //       hotel.availableDates.includes(date)
-//     //     )
-//     //   : true;
-
-//     return locationMatches; // && datesMatch && specificDatesMatch;
-//   });
-// }
-
 export function filterHotels(searchCriteria: any): Hotel[] {
-  console.log("..........", searchCriteria)
   const dateRegex = new RegExp(
     searchCriteria.checkIn
       ? searchCriteria.checkIn.split("-").join("\\-")

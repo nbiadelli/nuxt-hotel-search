@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt", // needed
     "@pinia-plugin-persistedstate/nuxt",
     "@nuxtjs/tailwindcss",
+    '@nuxt/test-utils/module'
   ],
   build: {
     transpile: ["pinia-plugin-persistedstate"],

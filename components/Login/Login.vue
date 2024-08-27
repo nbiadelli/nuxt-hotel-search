@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '../../stores/auth';
 import { useRouter } from 'vue-router';
 
 const username = ref('');
@@ -34,7 +34,6 @@ const handleSubmit = async () => {
     router.push('/search');
   } catch (error) {
     errorMessage.value = (error as Error).message;
-    console.log("....", errorMessage.value)
   }
 };
 </script>
