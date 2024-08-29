@@ -43,7 +43,7 @@ Para testes end-to-end.
 
 ```bash
 # npm
-yarn install
+npm install
 
 ```
 
@@ -74,7 +74,7 @@ npm run test:unit
 
 ```
 
-## Instruçôes
+## Instruções
 
 
 ```bash
